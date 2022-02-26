@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="minus_back_characters_middle.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="head bops center instance 10000" x="10" y="10" width="2414" height="974" frameX="0" frameY="-10" frameWidth="2414" frameHeight="984"/>
+	<SubTexture name="head bops center instance 10001" x="10" y="10" width="2414" height="974" frameX="0" frameY="-10" frameWidth="2414" frameHeight="984"/>
+	<SubTexture name="head bops center instance 10002" x="2434" y="10" width="2411" height="974" frameX="0" frameY="-10" frameWidth="2414" frameHeight="984"/>
+	<SubTexture name="head bops center instance 10003" x="4855" y="10" width="2411" height="977" frameX="0" frameY="-7" frameWidth="2414" frameHeight="984"/>
+	<SubTexture name="head bops center instance 10004" x="10" y="997" width="2409" height="981" frameX="0" frameY="-3" frameWidth="2414" frameHeight="984"/>
+	<SubTexture name="head bops center instance 10005" x="10" y="997" width="2409" height="981" frameX="0" frameY="-3" frameWidth="2414" frameHeight="984"/>
+	<SubTexture name="head bops center instance 10006" x="2429" y="997" width="2408" height="984" frameX="0" frameY="0" frameWidth="2414" frameHeight="984"/>
+	<SubTexture name="head bops center instance 10007" x="2429" y="997" width="2408" height="984" frameX="0" frameY="0" frameWidth="2414" frameHeight="984"/>
+</TextureAtlas>

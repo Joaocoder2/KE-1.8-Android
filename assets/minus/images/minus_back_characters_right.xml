@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="minus_back_characters_right.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="headbops right instance 10000" x="10" y="10" width="461" height="1042" frameX="0" frameY="-11" frameWidth="461" frameHeight="1053"/>
+	<SubTexture name="headbops right instance 10001" x="10" y="10" width="461" height="1042" frameX="0" frameY="-11" frameWidth="461" frameHeight="1053"/>
+	<SubTexture name="headbops right instance 10002" x="481" y="10" width="457" height="1042" frameX="-3" frameY="-11" frameWidth="461" frameHeight="1053"/>
+	<SubTexture name="headbops right instance 10003" x="948" y="10" width="457" height="1046" frameX="-3" frameY="-7" frameWidth="461" frameHeight="1053"/>
+	<SubTexture name="headbops right instance 10004" x="1415" y="10" width="454" height="1050" frameX="-4" frameY="-3" frameWidth="461" frameHeight="1053"/>
+	<SubTexture name="headbops right instance 10005" x="1415" y="10" width="454" height="1050" frameX="-4" frameY="-3" frameWidth="461" frameHeight="1053"/>
+	<SubTexture name="headbops right instance 10006" x="1879" y="10" width="450" height="1053" frameX="-6" frameY="0" frameWidth="461" frameHeight="1053"/>
+	<SubTexture name="headbops right instance 10007" x="1879" y="10" width="450" height="1053" frameX="-6" frameY="0" frameWidth="461" frameHeight="1053"/>
+</TextureAtlas>
