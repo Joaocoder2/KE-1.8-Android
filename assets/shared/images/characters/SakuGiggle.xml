@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Saku Giggle.png">
+	<!-- Created with Adobe Animate version 16.0.1.119 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Saku Giggle0000" x="10" y="10" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0001" x="10" y="10" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0002" x="873" y="10" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0003" x="873" y="10" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0004" x="1736" y="10" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0005" x="1736" y="10" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0006" x="2599" y="10" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0007" x="2599" y="10" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0008" x="10" y="953" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0009" x="10" y="953" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0010" x="873" y="953" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0011" x="873" y="953" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0012" x="1736" y="953" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0013" x="1736" y="953" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0014" x="2599" y="953" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0015" x="2599" y="953" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0016" x="10" y="1896" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0017" x="10" y="1896" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0018" x="873" y="1896" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0019" x="873" y="1896" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0020" x="1736" y="1896" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0021" x="1736" y="1896" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0022" x="2599" y="1896" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0023" x="2599" y="1896" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0024" x="10" y="2839" width="853" height="933"/>
+	<SubTexture name="Saku Giggle0025" x="10" y="2839" width="853" height="933"/>
+</TextureAtlas>
