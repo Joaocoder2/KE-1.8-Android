@@ -3,7 +3,6 @@ package;
 import flixel.FlxG;
 
 using StringTools;
-
 class Highscore
 {
 	#if (haxe >= "4.0.0")
@@ -14,11 +13,12 @@ class Highscore
 	public static var songCombos:Map<String, String> = new Map<String, String>();
 	#end
 
+
 	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0):Void
 	{
 		var daSong:String = formatSong(song, diff);
 
-		if (!FlxG.save.data.botplay)
+		if(!FlxG.save.data.botplay)
 		{
 			if (songScores.exists(daSong))
 			{
@@ -28,30 +28,11 @@ class Highscore
 			else
 				setScore(daSong, score);
 		}
-		else
-			trace('BotPlay detected. Score saving is disabled.');
-	}
-
-	public static function saveCombo(song:String, combo:String, ?diff:Int = 0):Void
-	{
-		var daSong:String = formatSong(song, diff);
-		var finalCombo:String = combo.split(')')[0].replace('(', '');
-
-		if (!FlxG.save.data.botplay)
-		{
-			if (songCombos.exists(daSong))
-			{
-				if (getComboInt(songCombos.get(daSong)) < getComboInt(finalCombo))
-					setCombo(daSong, finalCombo);
-			}
-			else
-				setCombo(daSong, finalCombo);
-		}
 	}
 
 	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0):Void
 	{
-		if (!FlxG.save.data.botplay)
+		if(!FlxG.save.data.botplay)
 		{
 			var daWeek:String = formatSong('week' + week, diff);
 
@@ -62,9 +43,24 @@ class Highscore
 			}
 			else
 				setScore(daWeek, score);
+		}else trace('BotPlay detected. Score saving is disabled.');
+	}
+
+	public static function saveCombo(song:String, combo:String, ?diff:Int = 0):Void
+	{
+		var daSong:String = formatSong(song, diff);
+		var finalCombo:String = combo.split(')')[0].replace('(', '');
+
+		if(!FlxG.save.data.botplay)
+		{
+			if (songCombos.exists(daSong))
+			{
+				if (getComboInt(songCombos.get(daSong)) < getComboInt(finalCombo))
+					setCombo(daSong, finalCombo);
+			}
+			else
+				setCombo(daSong, finalCombo);
 		}
-		else
-			trace('BotPlay detected. Score saving is disabled.');
 	}
 
 	/**
@@ -91,17 +87,23 @@ class Highscore
 		var daSong:String = song;
 
 		if (diff == 0)
+			daSong += '-heaven';
+		else if (diff == 1)
 			daSong += '-easy';
-		else if (diff == 2)
+		else if (diff == 3)
 			daSong += '-hard';
+		else if (diff == 4)
+			daSong += '-hell';
 
 		return daSong;
 	}
 
 	static function getComboInt(combo:String):Int
 	{
-		switch (combo)
+		switch(combo)
 		{
+			case 'Clear':
+				return 0;
 			case 'SDCB':
 				return 1;
 			case 'FC':
@@ -111,7 +113,7 @@ class Highscore
 			case 'MFC':
 				return 4;
 			default:
-				return 0;
+				return -1;
 		}
 	}
 

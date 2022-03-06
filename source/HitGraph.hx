@@ -1,17 +1,14 @@
-import flixel.FlxG;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
-import openfl.text.TextFieldAutoSize;
-import flixel.system.FlxAssets;
-import openfl.text.TextFormat;
 import flash.display.Graphics;
 import flash.display.Shape;
 import flash.display.Sprite;
 import flash.text.TextField;
-import flash.text.TextFormatAlign;
-import flixel.math.FlxMath;
+import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.text.TextFieldAutoSize;
+import openfl.text.TextFormat;
 
 /**
  * stolen from https://github.com/HaxeFlixel/flixel/blob/master/flixel/system/debug/stats/StatsGraph.hx
@@ -20,12 +17,6 @@ class HitGraph extends Sprite
 {
 	static inline var AXIS_COLOR:FlxColor = 0xffffff;
 	static inline var AXIS_ALPHA:Float = 0.5;
-	inline static var HISTORY_MAX:Int = 30;
-
-	public var minLabel:TextField;
-	public var curLabel:TextField;
-	public var maxLabel:TextField;
-	public var avgLabel:TextField;
 
 	public var minValue:Float = -(Math.floor((PlayState.rep.replay.sf / 60) * 1000) + 95);
 	public var maxValue:Float = Math.floor((PlayState.rep.replay.sf / 60) * 1000) + 95;
@@ -38,14 +29,10 @@ class HitGraph extends Sprite
 
 	public var bitmap:Bitmap;
 
-	public var ts:Float;
-
 	var _axis:Shape;
 	var _width:Int;
 	var _height:Int;
-	var _unit:String;
 	var _labelWidth:Int;
-	var _label:String;
 
 	public function new(X:Int, Y:Int, Width:Int, Height:Int)
 	{
@@ -55,17 +42,17 @@ class HitGraph extends Sprite
 		_width = Width;
 		_height = Height;
 
-		var bm = new BitmapData(Width, Height);
+		var bm = new BitmapData(Width,Height);
 		bm.draw(this);
 		bitmap = new Bitmap(bm);
 
 		_axis = new Shape();
 		_axis.x = _labelWidth + 10;
 
-		ts = Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166;
+		var ts = Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166;
 
-		var early = createTextField(10, 10, FlxColor.WHITE, 12);
-		var late = createTextField(10, _height - 20, FlxColor.WHITE, 12);
+		var early = createTextField(10,10,FlxColor.WHITE,12);
+		var late = createTextField(10,_height - 20,FlxColor.WHITE,12);
 
 		early.text = "Early (" + -166 * ts + "ms)";
 		late.text = "Late (" + 166 * ts + "ms)";
@@ -97,6 +84,7 @@ class HitGraph extends Sprite
 
 		gfx.moveTo(0, _height / 2);
 		gfx.lineTo(_width, _height / 2);
+
 	}
 
 	public static function createTextField(X:Float = 0, Y:Float = 0, Color:FlxColor = FlxColor.WHITE, Size:Int = 12):TextField
@@ -124,6 +112,7 @@ class HitGraph extends Sprite
 
 	function drawJudgementLine(ms:Float):Void
 	{
+
 		var gfx:Graphics = graphics;
 
 		gfx.lineStyle(1, graphColor, 0.3);
@@ -140,9 +129,7 @@ class HitGraph extends Sprite
 		if (ms == 45)
 			gfx.moveTo(graphX, _axis.y + pointY);
 
-		var graphX = _axis.x + 1;
-
-		gfx.drawRect(graphX, pointY, _width, 1);
+		gfx.drawRect(graphX,pointY, _width,1);
 
 		gfx.lineStyle(1, graphColor, 1);
 	}
@@ -208,7 +195,7 @@ class HitGraph extends Sprite
 					continue;
 
 				var pointY = (-value * _height - 1) + _height;
-				gfx.drawRect(graphX + fitX(ana.hitTime), pointY, 2, 2);
+				gfx.drawRect(graphX + fitX(ana.hitTime), pointY,2,2);
 				gfx.endFill();
 			}
 		}
@@ -218,7 +205,7 @@ class HitGraph extends Sprite
 			var value = (history[i][0] - minValue) / range;
 			var judge = history[i][1];
 
-			switch (judge)
+			switch(judge)
 			{
 				case "sick":
 					gfx.beginFill(0x00FFFF);
@@ -233,41 +220,34 @@ class HitGraph extends Sprite
 				default:
 					gfx.beginFill(0xFFFFFF);
 			}
-			var pointY = ((-value * _height - 1) + _height);
+			var pointY = (-value * _height - 1) + _height;
 
 			/*if (i == 0)
-				gfx.moveTo(graphX, _axis.y + pointY); */
-			gfx.drawRect(fitX(history[i][2]), pointY, 4, 4);
+				gfx.moveTo(graphX, _axis.y + pointY);*/
+			gfx.drawRect(fitX(history[i][2]), pointY,4,4);
 
 			gfx.endFill();
 		}
 
-		var bm = new BitmapData(_width, _height);
+
+		var bm = new BitmapData(_width,_height);
 		bm.draw(this);
 		bitmap = new Bitmap(bm);
 	}
 
 	public function fitX(x:Float)
 	{
-		return ((x / (FlxG.sound.music.length / PlayState.songMultiplier)) * width) * PlayState.songMultiplier;
+		return (x / FlxG.sound.music.length) * width;
 	}
 
 	public function addToHistory(diff:Float, judge:String, time:Float)
 	{
-		history.push([diff, judge, time]);
+		history.push([diff,judge, time]);
 	}
 
 	public function update():Void
 	{
 		drawGraph();
-	}
-
-	public function average():Float
-	{
-		var sum:Float = 0;
-		for (value in history)
-			sum += value;
-		return sum / history.length;
 	}
 
 	public function destroy():Void

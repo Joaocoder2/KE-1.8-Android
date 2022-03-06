@@ -1,89 +1,61 @@
 package;
 
-import openfl.Lib;
-#if FEATURE_LUAMODCHART
-import llua.Lua;
-#end
-import Controls.Control;
+import flixel.util.FlxTimer;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.FlxSubState;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.input.keyboard.FlxKey;
+import flixel.input.gamepad.FlxGamepad;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import openfl.Lib;
 
 class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	public static var goToOptions:Bool = false;
-	public static var goBack:Bool = false;
-
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Options', "Waveform Test", 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Exit to menu'];
+	var difficulties:Array<String> = ['Heaven', 'Easy', 'Normal', 'Hard', 'Hell'];
 	var curSelected:Int = 0;
 
-	public static var playingPause:Bool = false;
-
 	var pauseMusic:FlxSound;
-
 	var perSongOffset:FlxText;
+	var songPath:String;
 
 	var offsetChanged:Bool = false;
 	var startOffset:Float = PlayState.songOffset;
+	var difficultyMenu:Bool = false;
 
-	var bg:FlxSprite;
+	// (Carbon) For controllers only!
+	var confirmButtonEnabled = true;
 
-	public function new()
+	public function new(x:Float, y:Float)
 	{
 		super();
 
-		if (PlayState.instance.useVideo)
-		{
-			menuItems.remove("Resume");
-			if (GlobalVideo.get().playing)
-				GlobalVideo.get().pause();
+		if(FlxG.gamepads.lastActive != null) {
+			confirmButtonEnabled = false;
+
+			new FlxTimer().start(0.5, (timer:FlxTimer) -> {
+				confirmButtonEnabled = true;
+			});
 		}
 
-		if (FlxG.sound.music.playing)
-			FlxG.sound.music.pause();
+		pauseMusic = new FlxSound().loadEmbedded(Paths.music('Snackrifice'), true, true);
+		pauseMusic.volume = 0;
+		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
 
-		for (i in FlxG.sound.list)
-		{
-			if (i.playing && i.ID != 9000)
-				i.pause();
-		}
+		FlxG.sound.list.add(pauseMusic);
 
-		if (!playingPause)
-		{
-			playingPause = true;
-			pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
-			pauseMusic.volume = 0;
-			pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
-			pauseMusic.ID = 9000;
-
-			FlxG.sound.list.add(pauseMusic);
-		}
-		else
-		{
-			for (i in FlxG.sound.list)
-			{
-				if (i.ID == 9000) // jankiest static variable
-					pauseMusic = i;
-			}
-		}
-
-		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0;
 		bg.scrollFactor.set();
 		add(bg);
 
 		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
-		levelInfo.text += PlayState.SONG.songName;
+		levelInfo.text += PlayState.SONG.song;
 		levelInfo.scrollFactor.set();
 		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
 		levelInfo.updateHitbox();
@@ -96,24 +68,34 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
 
+		var levelMode:FlxText = new FlxText(20, 15 + 64, 0, "", 32);
+		levelMode.text += CoolUtil.modeString();
+		levelMode.scrollFactor.set();
+		levelMode.setFormat(Paths.font('vcr.ttf'), 32);
+		levelMode.updateHitbox();
+		add(levelMode);
+
+		levelMode.alpha = 0;
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
 
 		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
+		levelMode.x = FlxG.width - (levelMode.width + 20);
 
 		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
+		FlxTween.tween(levelMode, {alpha: 1, y: levelMode.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
-		perSongOffset = new FlxText(5, FlxG.height - 18, 0, "Hello chat", 12);
+		perSongOffset = new FlxText(5, FlxG.height - 18, 0, "Additive Offset (Left, Right): " + PlayState.songOffset + " - Description - " + 'Adds value to global offset, per song.', 12);
 		perSongOffset.scrollFactor.set();
 		perSongOffset.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
-		#if FEATURE_FILESYSTEM
-		add(perSongOffset);
+		#if cpp
+			add(perSongOffset);
 		#end
 
 		for (i in 0...menuItems.length)
@@ -124,38 +106,33 @@ class PauseSubState extends MusicBeatSubstate
 			grpMenuShit.add(songText);
 		}
 
+		// pre lowercasing the song name (update)
+		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
+		songPath = 'assets/data/' + songLowercase + '/';
+
 		changeSelection();
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-
-                addVirtualPad(UP_DOWN, A);
-                addPadCamera();
+		
+		#if mobileC
+		addVirtualPad(UP_DOWN, A);
+		#end
 	}
 
 	override function update(elapsed:Float)
 	{
-		if (pauseMusic.volume < 0.5)
+		if (pauseMusic.volume < 0.7)
+		{
 			pauseMusic.volume += 0.01 * elapsed;
+		}
+		else if (pauseMusic.volume > 0.7)
+		{
+			pauseMusic.volume = 0.7;
+		}
 
 		super.update(elapsed);
 
-		if (PlayState.instance.useVideo)
-			menuItems.remove('Resume');
-
-		for (i in FlxG.sound.list)
-		{
-			if (i.playing && i.ID != 9000)
-				i.pause();
-		}
-
-		if (bg.alpha > 0.6)
-			bg.alpha = 0.6;
-
-		var oldOffset:Float = 0;
-
-		var songPath = SUtil.getPath() + 'assets/data/songs/${PlayState.SONG.songId}/';
-
-		#if FEATURE_STEPMANIA
+		#if (sys && !mobile)
 		if (PlayState.isSM && !PlayState.isStoryMode)
 			songPath = PlayState.pathToSm;
 		#end
@@ -163,93 +140,86 @@ class PauseSubState extends MusicBeatSubstate
 		if (controls.UP_P)
 		{
 			changeSelection(-1);
+
 		}
 		else if (controls.DOWN_P)
 		{
 			changeSelection(1);
 		}
-
-		if (controls.ACCEPT && !FlxG.keys.pressed.ALT)
+		else if (controls.LEFT_P)
 		{
-			var daSelected:String = menuItems[curSelected];
+			changeOffset(-1);
+		}
+		else if (controls.RIGHT_P)
+		{
+			changeOffset(1);
+		}
 
-			switch (daSelected)
+		if (controls.ACCEPT && !FlxG.keys.pressed.ALT && confirmButtonEnabled)
+		{
+			if (difficultyMenu)
 			{
-				case "Resume":
-					close();
-				case "Restart Song":
-					PlayState.startTime = 0;
-					if (PlayState.instance.useVideo)
-					{
-						GlobalVideo.get().stop();
-						PlayState.instance.remove(PlayState.instance.videoSprite);
-						PlayState.instance.removedVideo = true;
-					}
-					PlayState.instance.clean();
-					FlxG.resetState();
-					PlayState.stageTesting = false;
-				case "Options":
-					goToOptions = true;
-					close();
-                                case "Waveform Test":
-                                        PlayState.songMultiplier = 1;
-			                if (PlayState.instance.useVideo)
-			                {
-				                GlobalVideo.get().stop();
-				                PlayState.instance.remove(PlayState.instance.videoSprite);
-				                PlayState.instance.removedVideo = true;
-			                }
+				if (PlayState.SONG.song == "Ectospasm")
+				{
+					PlayState.SONG = Song.loadFromJson(Highscore.formatSong(StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase(), 3), PlayState.SONG.song);
+					PlayState.storyDifficulty = 3;
+				}
+				else
+				{
+					PlayState.SONG = Song.loadFromJson(Highscore.formatSong(StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase(), curSelected), PlayState.SONG.song);
+					PlayState.storyDifficulty = curSelected;
+				}
+				FlxG.resetState();
+			}
+			else
+			{
+				switch (menuItems[curSelected])
+				{
+					case "Resume":
+						close();
+					case "Restart Song":
+						PlayState.startTime = 0;
+						FlxG.resetState();
+					case "Change Difficulty":
+						switchMenu();
+					case "Exit to menu":
+						PlayState.startTime = 0;
+						if(PlayState.loadRep)
+						{
+							FlxG.save.data.botplay = false;
+							FlxG.save.data.scrollSpeed = 1;
+							FlxG.save.data.downscroll = false;
+						}
+						PlayState.loadRep = false;
 
-			                FlxG.switchState(new WaveformTestState());
-			                PlayState.stageTesting = false;
-			                #if FEATURE_LUAMODCHART
-			                if (PlayState.luaModchart != null)
-			                {
-				                PlayState.luaModchart.die();
-				                PlayState.luaModchart = null;
-			                }
-			                #end
-				case "Exit to menu":
-					PlayState.startTime = 0;
-					if (PlayState.instance.useVideo)
-					{
-						GlobalVideo.get().stop();
-						PlayState.instance.remove(PlayState.instance.videoSprite);
-						PlayState.instance.removedVideo = true;
-					}
-					if (PlayState.loadRep)
-					{
-						FlxG.save.data.botplay = false;
-						FlxG.save.data.scrollSpeed = 1;
-						FlxG.save.data.downscroll = false;
-					}
-					PlayState.loadRep = false;
-					PlayState.stageTesting = false;
-					#if FEATURE_LUAMODCHART
-					if (PlayState.luaModchart != null)
-					{
-						PlayState.luaModchart.die();
-						PlayState.luaModchart = null;
-					}
-					#end
-					if (FlxG.save.data.fpsCap > 340)
-						(cast(Lib.current.getChildAt(0), Main)).setFPSCap(120);
+						if (PlayState.luaModchart != null)
+						{
+							PlayState.luaModchart.die();
+							PlayState.luaModchart = null;
+						}
 
-					PlayState.instance.clean();
+						if (FlxG.save.data.fpsCap > 290)
+							(cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
 
-					if (PlayState.isStoryMode)
-					{
-						GameplayCustomizeState.freeplayBf = 'bf';
-						GameplayCustomizeState.freeplayDad = 'dad';
-						GameplayCustomizeState.freeplayGf = 'gf';
-						GameplayCustomizeState.freeplayNoteStyle = 'normal';
-						GameplayCustomizeState.freeplayStage = 'stage';
-						GameplayCustomizeState.freeplaySong = 'bopeebo';
-						GameplayCustomizeState.freeplayWeek = 1;
-						FlxG.switchState(new StoryMenuState());
-					}
-					else
-						FlxG.switchState(new FreeplayState());
+						if (PlayState.isStoryMode)
+							FlxG.switchState(new StoryMenuState());
+						else
+							FlxG.switchState(new FreeplayState());
+				}
+			}
+		}
+
+		if (controls.BACK)
+		{
+			// Go back to pause options
+			if (difficultyMenu)
+			{
+				switchMenu();
+			}
+			// Resume the game
+			else if (!offsetChanged)
+			{
+				close();
 			}
 		}
 
@@ -262,12 +232,7 @@ class PauseSubState extends MusicBeatSubstate
 
 	override function destroy()
 	{
-		if (!goToOptions)
-		{
-			Debug.logTrace("destroying music for pauseeta");
-			pauseMusic.destroy();
-			playingPause = false;
-		}
+		pauseMusic.destroy();
 
 		super.destroy();
 	}
@@ -279,9 +244,13 @@ class PauseSubState extends MusicBeatSubstate
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		if (curSelected < 0)
+		{
 			curSelected = menuItems.length - 1;
+		}
 		if (curSelected >= menuItems.length)
+		{
 			curSelected = 0;
+		}
 
 		var bullShit:Int = 0;
 
@@ -298,6 +267,102 @@ class PauseSubState extends MusicBeatSubstate
 				item.alpha = 1;
 				// item.setGraphicSize(Std.int(item.width));
 			}
+		}
+	}
+
+	function switchMenu()
+	{
+		// Bring it back to the first in the index and toggle the flag
+		curSelected = 0;
+		difficultyMenu = !difficultyMenu;
+
+		// Rename the settings
+		if (difficultyMenu)
+		{
+			if (PlayState.SONG.song == "Ectospasm")
+				menuItems = ['Hell'];
+			else
+				menuItems = ['Heaven', 'Easy', 'Normal', 'Hard', 'Hell'];
+		}
+		else
+		{
+			if (offsetChanged)
+			{
+				menuItems = ['Restart Song', 'Change Difficulty', 'Exit to menu'];
+			}
+			else
+			{
+				menuItems = ['Resume', 'Restart Song', 'Change Difficulty', 'Exit to menu'];
+			}
+		}
+
+		// Clear and recreate the objects
+		grpMenuShit.clear();
+		for (i in 0...menuItems.length)
+		{
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+			songText.isMenuItem = true;
+			songText.targetY = i;
+			grpMenuShit.add(songText);
+		}
+
+		// Update positions
+		changeSelection();
+	}
+
+	function changeOffset(amount:Int)
+	{
+		var oldOffset = PlayState.songOffset;
+		PlayState.songOffset += amount;
+		sys.FileSystem.rename(songPath + oldOffset + '.offset', songPath + PlayState.songOffset + '.offset');
+		perSongOffset.text = "Additive Offset (Left, Right): " + PlayState.songOffset + " - Description - " + 'Adds value to global offset, per song.';
+
+		// Prevent loop from happening every single time the offset changes
+		if(!offsetChanged)
+		{
+			if (!difficultyMenu)
+			{
+				grpMenuShit.clear();
+
+				menuItems = ['Restart Song', 'Change Difficulty', 'Exit to menu'];
+
+				for (i in 0...menuItems.length)
+				{
+					var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+					songText.isMenuItem = true;
+					songText.targetY = i;
+					grpMenuShit.add(songText);
+				}
+
+				changeSelection();
+
+				cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+			}
+			offsetChanged = true;
+		}
+		else if (PlayState.songOffset == startOffset)
+		{
+			if (!difficultyMenu)
+			{
+				grpMenuShit.clear();
+
+				menuItems = ['Resume', 'Restart Song', 'Change Difficulty', 'Exit to menu'];
+
+				for (i in 0...menuItems.length)
+				{
+					var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+					songText.isMenuItem = true;
+					songText.targetY = i;
+					grpMenuShit.add(songText);
+				}
+
+				changeSelection();
+
+				cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+				offsetChanged = true;
+			}
+
+			offsetChanged = false;
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package;
 
 import Controls;
-import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.util.FlxSignal;
 
@@ -10,17 +9,8 @@ import flixel.util.FlxSignal;
 class PlayerSettings
 {
 	static public var numPlayers(default, null) = 0;
-	static public var numAvatars(default, null) = 0;
 	static public var player1(default, null):PlayerSettings;
 	static public var player2(default, null):PlayerSettings;
-
-	#if (haxe >= "4.0.0")
-	static public final onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();
-	static public final onAvatarRemove = new FlxTypedSignal<PlayerSettings->Void>();
-	#else
-	static public var onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();
-	static public var onAvatarRemove = new FlxTypedSignal<PlayerSettings->Void>();
-	#end
 
 	public var id(default, null):Int;
 
@@ -37,11 +27,6 @@ class PlayerSettings
 	{
 		this.id = id;
 		this.controls = new Controls('player$id', scheme);
-	}
-
-	public function setKeyboardScheme(scheme)
-	{
-		controls.setKeyboardScheme(scheme);
 	}
 
 	static public function init():Void
@@ -78,12 +63,5 @@ class PlayerSettings
 		}
 
 		// DeviceManager.init();
-	}
-
-	static public function reset()
-	{
-		player1 = null;
-		player2 = null;
-		numPlayers = 0;
 	}
 }

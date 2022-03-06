@@ -1,15 +1,13 @@
-import openfl.Lib;
 import flixel.FlxG;
+import flixel.input.gamepad.FlxGamepad;
+import openfl.Lib;
 
 class KadeEngineData
 {
-	public static function initSave()
-	{
-		if (FlxG.save.data.weekUnlocked == null)
-			FlxG.save.data.weekUnlocked = 7;
-
-		if (FlxG.save.data.newInput == null)
-			FlxG.save.data.newInput = true;
+    public static function initSave()
+    {
+        //if (FlxG.save.data.weekUnlocked == null)
+		//	FlxG.save.data.weekUnlocked = 1;
 
 		if (FlxG.save.data.downscroll == null)
 			FlxG.save.data.downscroll = false;
@@ -19,9 +17,6 @@ class KadeEngineData
 
 		if (FlxG.save.data.missSounds == null)
 			FlxG.save.data.missSounds = true;
-
-		if (FlxG.save.data.dfjk == null)
-			FlxG.save.data.dfjk = false;
 
 		if (FlxG.save.data.accuracyDisplay == null)
 			FlxG.save.data.accuracyDisplay = true;
@@ -48,7 +43,7 @@ class KadeEngineData
 		if (FlxG.save.data.fpsCap == null)
 			FlxG.save.data.fpsCap = 120;
 
-		if (FlxG.save.data.fpsCap > 340 || FlxG.save.data.fpsCap < 60)
+		if (FlxG.save.data.fpsCap > 285 || FlxG.save.data.fpsCap < 60)
 			FlxG.save.data.fpsCap = 120; // baby proof so you can't hard lock ur copy of kade engine
 
 		if (FlxG.save.data.scrollSpeed == null)
@@ -69,17 +64,35 @@ class KadeEngineData
 		if (FlxG.save.data.ghost == null)
 			FlxG.save.data.ghost = true;
 
-		if (FlxG.save.data.distractions == null)
-			FlxG.save.data.distractions = true;
+		if (FlxG.save.data.background == null)
+			FlxG.save.data.background = 2;
 
-		if (FlxG.save.data.colour == null)
-			FlxG.save.data.colour = true;
+		if (FlxG.save.data.modChart == null)
+			FlxG.save.data.modChart = true;
 
 		if (FlxG.save.data.stepMania == null)
 			FlxG.save.data.stepMania = false;
 
 		if (FlxG.save.data.flashing == null)
 			FlxG.save.data.flashing = true;
+
+		if (FlxG.save.data.motion == null)
+			FlxG.save.data.motion = true;
+
+		if (FlxG.save.data.chrom == null)
+			FlxG.save.data.chrom = true;
+
+		if (FlxG.save.data.ghostTrails == null)
+			FlxG.save.data.ghostTrails = true;
+
+		if (FlxG.save.data.particles == null)
+			FlxG.save.data.particles = true;
+
+		if (FlxG.save.data.screenShake == null)
+			FlxG.save.data.screenShake = true;
+
+		if (FlxG.save.data.windowShake == null)
+			FlxG.save.data.windowShake = true;
 
 		if (FlxG.save.data.resetButton == null)
 			FlxG.save.data.resetButton = false;
@@ -91,13 +104,13 @@ class KadeEngineData
 			FlxG.save.data.botplay = false;
 
 		if (FlxG.save.data.cpuStrums == null)
-			FlxG.save.data.cpuStrums = false;
+			FlxG.save.data.cpuStrums = true;
 
 		if (FlxG.save.data.strumline == null)
 			FlxG.save.data.strumline = false;
 
 		if (FlxG.save.data.customStrumLine == null)
-			FlxG.save.data.customStrumLine = 0;
+			FlxG.save.data.customStrumLine = true;
 
 		if (FlxG.save.data.camzoom == null)
 			FlxG.save.data.camzoom = true;
@@ -111,54 +124,77 @@ class KadeEngineData
 		if (FlxG.save.data.optimize == null)
 			FlxG.save.data.optimize = false;
 
-		FlxG.save.data.cacheImages = false;
+		if (FlxG.save.data.cacheImages == null)
+			FlxG.save.data.cacheImages = false;
 
-		if (FlxG.save.data.middleScroll == null)
-			FlxG.save.data.middleScroll = false;
+		if (FlxG.save.data.cacheCutscenes == null)
+			FlxG.save.data.cacheCutscenes = false;
 
-		if (FlxG.save.data.editorBG == null)
-			FlxG.save.data.editor = false;
+		if (FlxG.save.data.editor == null)
+			FlxG.save.data.editor = true;
 
 		if (FlxG.save.data.zoom == null)
 			FlxG.save.data.zoom = 1;
 
-		if (FlxG.save.data.judgementCounter == null)
-			FlxG.save.data.judgementCounter = true;
+		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
-		if (FlxG.save.data.laneUnderlay == null)
-			FlxG.save.data.laneUnderlay = true;
+		KeyBinds.gamepad = gamepad != null;
 
-		if (FlxG.save.data.healthBar == null)
-			FlxG.save.data.healthBar = true;
+		// Data for Retro mod
+		// Load unlocked mode data
+		if (FlxG.save.data.modeUnlocked != null)
+		{
+			for (i in 0...StoryMenuState.modeUnlocked.length)
+			{
+				// (Arcy) Fail-safe for data not being the same length
+				if (FlxG.save.data.modeUnlocked[i] != null)
+					StoryMenuState.modeUnlocked[i] = FlxG.save.data.modeUnlocked[i];
+			}
+		}
 
-		if (FlxG.save.data.laneTransparency == null)
-			FlxG.save.data.laneTransparency = 0;
+		// Load unlocked character data
+		if (FlxG.save.data.characterUnlocked != null)
+		{
+			for (i in 0...StoryMenuState.characterUnlocked.length)
+			{
+				// (Arcy) Fail-safe for data not being the same length
+				if (FlxG.save.data.characterUnlocked[i] != null)
+					StoryMenuState.characterUnlocked[i] = FlxG.save.data.characterUnlocked[i];
+			}
+		}
 
-		if (FlxG.save.data.shitMs == null)
-			FlxG.save.data.shitMs = 160.0;
+		// Load unlocked girlfriend data
+		if (FlxG.save.data.girlfriendUnlocked != null)
+		{
+			for (i in 0...StoryMenuState.girlfriendUnlocked.length)
+			{
+				// (Arcy) Fail-safe for data not being the same length
+				if (FlxG.save.data.girlfriendUnlocked[i] != null)
+					StoryMenuState.girlfriendUnlocked[i] = FlxG.save.data.girlfriendUnlocked[i];
+			}
+		}
 
-		if (FlxG.save.data.badMs == null)
-			FlxG.save.data.badMs = 135.0;
+		// Load unlocked song data
+		if (FlxG.save.data.songUnlocked != null)
+		{
+			for (i in 0...FreeplayState.songUnlocked.length)
+			{
+				// (Arcy) Fail-safe for data not being the same length
+				if (FlxG.save.data.songUnlocked[i] != null)
+					FreeplayState.songUnlocked[i] = FlxG.save.data.songUnlocked[i];
+			}
+		}
 
-		if (FlxG.save.data.goodMs == null)
-			FlxG.save.data.goodMs = 90.0;
-
-		if (FlxG.save.data.sickMs == null)
-			FlxG.save.data.sickMs = 45.0;
-
-		Ratings.timingWindows = [
-			FlxG.save.data.shitMs,
-			FlxG.save.data.badMs,
-			FlxG.save.data.goodMs,
-			FlxG.save.data.sickMs
-		];
-
-		if (FlxG.save.data.noteskin == null)
-			FlxG.save.data.noteskin = 0;
-
-		// Gonna make this an option on another PR
-		if (FlxG.save.data.overrideNoteskins == null)
-			FlxG.save.data.overrideNoteskins = false;
+		// Load visible song data
+		if (FlxG.save.data.songVisible != null)
+		{
+			for (i in 0...FreeplayState.songVisible.length)
+			{
+				// (Arcy) Fail-safe for data not being the same length
+				if (FlxG.save.data.songVisible[i] != null)
+					FreeplayState.songVisible[i] = FlxG.save.data.songVisible[i];
+			}
+		}
 
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();
@@ -166,6 +202,6 @@ class KadeEngineData
 
 		Main.watermarks = FlxG.save.data.watermark;
 
-		(cast(Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 	}
 }

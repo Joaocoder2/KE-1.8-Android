@@ -2,7 +2,6 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
 
@@ -24,34 +23,30 @@ class HealthIcon extends FlxSprite
 		this.char = char;
 		this.isPlayer = isPlayer;
 
+		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+
+		animation.add('bf', [0, 1], 0, false, isPlayer);
+		animation.add('gf', [2], 0, false, isPlayer);
+		animation.add('bf-retro', [10, 11], 0, false, isPlayer);			// VS RetroSpecter: Bf Retrospecter character
+		animation.add('bf-ace', [20, 21], 0, false, isPlayer);			    // VS RetroSpecter: Bf Ace character
+		animation.add('bf-retro-wrath', [10, 11], 0, false, isPlayer);		// VS RetroSpecter: BF Retrospecter Wrath character
+		animation.add('bf-ace-wrath', [20, 21], 0, false, isPlayer);		// VS RetroSpecter: BF Ace Wrath character
+		animation.add('bf-wrath', [0, 1], 0, false, isPlayer);				// VS RetroSpecter: BF Wrath character
+		animation.add('bf-wrath2', [0, 1], 0, false, isPlayer);				// VS RetroSpecter: BF Wrath character
+		animation.add('lock', [59], 0, false, isPlayer);					// VS RetroSpecter: Lock icon for locked songs
+		animation.add('retro', [3, 4], 0, false, isPlayer);					// VS RetroSpecter: Retro Phase 1
+		animation.add('retro-wrath', [3, 4, 13], 0, false, isPlayer);		// VS RetroSpecter: Retro Phase 1
+		animation.add('retro2', [5, 6], 0, false, isPlayer);				// VS RetroSpecter: Retro Phase 1
+		animation.add('retro2-wrath', [5, 6, 15, 16], 0, false, isPlayer);	// VS RetroSpecter: Retro Phase 2
+		animation.add('sakuroma', [7, 8, 9], 0, false, isPlayer);			// VS Sakuroma: Sakuroma Phase 1
+		animation.play(char);
+
 		isPlayer = isOldIcon = false;
 
-		changeIcon(char);
+		antialiasing = FlxG.save.data.antialiasing;
+
+		//changeIcon(char);
 		scrollFactor.set();
-	}
-
-	public function swapOldIcon()
-	{
-		(isOldIcon = !isOldIcon) ? changeIcon("bf-old") : changeIcon(char);
-	}
-
-	public function changeIcon(char:String)
-	{
-		if (char != 'bf-pixel' && char != 'bf-old')
-			char = char.split("-")[0];
-
-		if (!OpenFlAssets.exists(Paths.image('icons/icon-' + char)))
-			char = 'face';
-
-		loadGraphic(Paths.loadImage('icons/icon-' + char), true, 150, 150);
-
-		if (char.endsWith('-pixel') || char.startsWith('senpai') || char.startsWith('spirit'))
-			antialiasing = false
-		else
-			antialiasing = FlxG.save.data.antialiasing;
-
-		animation.add(char, [0, 1], 0, false, isPlayer);
-		animation.play(char);
 	}
 
 	override function update(elapsed:Float)
@@ -59,6 +54,8 @@ class HealthIcon extends FlxSprite
 		super.update(elapsed);
 
 		if (sprTracker != null)
+		{
 			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
+		}
 	}
 }
